@@ -2,6 +2,9 @@ package day3.온라인쇼핑몰주문처리;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class OrderProcessor {
     public static void main(String[] args) {
@@ -10,13 +13,36 @@ public class OrderProcessor {
 
         // 1. 총 주문 금액 계산
         // flatMap 을 사용하셔서 모든 주문에 포함된 상품들을 하나의 스트림으로 변환 한후 가격 합계 계산
+        double totalAmount = Objects.requireNonNull(orders).stream()
+                .flatMap(order -> order.getProducts().stream())
+                .mapToDouble(Product::getPrice)
+                .sum();
+
 
         // 2. 카테고리별 판매 금액 집계
         // flatMap, grouping by, summingDouble
+        Map<String, Double> categorySales = orders.stream()
+                .flatMap(order -> order.getProducts().stream())
+                .collect(Collectors.groupingBy(
+                        Product::getCategory,
+                        Collectors.summingDouble(Product::getPrice)
+                ));
 
         // 3. 최근 24시간 내 주문 필터링
+        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+        List<Order> recentOrders = orders.stream()
+                .filter(order -> order.getOrderDate().isAfter(yesterday))
+                .toList();
 
         // 4. 고객별 주문 횟수 및 총 금액 집계 (추가 예제)
+        Map<String, Double> customerTotalAmount = orders.stream()
+                .collect(Collectors.groupingBy(
+                        Order::getCustomerName,
+                        Collectors.summingDouble(order ->
+                                order.getProducts().stream()
+                                        .mapToDouble(Product::getPrice)
+                                        .sum())
+                ));
     }
 
     private static List<Order> getOrders() {

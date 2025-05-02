@@ -2,7 +2,6 @@ package day3.optional.학생성적관리시스템;
 
 import lombok.*;
 
-import java.net.Inet4Address;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -27,6 +26,10 @@ public class Student {
 
     public Optional<Integer> getGrade(String subject) {
         return Optional.ofNullable(grades.get(subject));
+    }
+
+    public Optional<String> getMajor() {
+        return Optional.ofNullable(major);
     }
 
     // 학생 전공을 조회하는 메서드 (Null 일 수 있다)
