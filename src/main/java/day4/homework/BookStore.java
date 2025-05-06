@@ -1,13 +1,11 @@
 package day4.homework;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class BookStore {
     private List<Book> books;
@@ -28,7 +26,9 @@ public class BookStore {
      * @return 조건에 맞는 도서 목록
      */
     public List<Book> findBooks(Predicate<Book> criteria) {
-        return null;
+        return books.stream()
+                .filter(criteria)
+                .toList();
     }
 
     /**
@@ -41,7 +41,9 @@ public class BookStore {
      */
     public <R> List<R> transformBooks(Function<Book, R> transformer) {
         // 구현
-        return null;
+        return books.stream()
+                .map(transformer)
+                .toList();
     }
 
     /**
@@ -52,6 +54,7 @@ public class BookStore {
      */
     public void processBooks(Consumer<Book> consumer) {
         // 구현
+        books.forEach(consumer);
     }
 
     /**
@@ -62,6 +65,9 @@ public class BookStore {
      */
     public void processFilteredBooks(Predicate<Book> criteria, Consumer<Book> consumer) {
         // 구현
+        books.stream()
+                .filter(criteria)
+                .forEach(consumer);
     }
 
     /**
@@ -72,7 +78,9 @@ public class BookStore {
      * @return 생성된 도서
      */
     public Book addBook(Supplier<Book> supplier) {
-        return null;
+        Book newBook = supplier.get();
+        books.add(newBook);
+        return newBook;
     }
 
     /**
@@ -99,7 +107,11 @@ public class BookStore {
      * @return 장르별 평균 평점 Map
      */
     public Map<String, Double> getAverageRatingByGenre() {
-        return null;
+        return books.stream()
+                .collect(Collectors.groupingBy(
+                        Book::getGenre,
+                        Collectors.averagingDouble(Book::getRating)
+                ));
     }
 
     /**
@@ -109,7 +121,10 @@ public class BookStore {
      * @return 최신 도서 목록
      */
     public List<Book> getLatestBooks(int limit) {
-        return null;
+        return books.stream()
+                .sorted(Comparator.comparing(Book::getYear).reversed())
+                .limit(limit)
+                .toList();
     }
 
     /**
@@ -119,7 +134,7 @@ public class BookStore {
      * @return 해당 저자의 도서 목록
      */
     public List<Book> getBooksByAuthor(String author) {
-        return null;
+        return findBooks(book -> author.equals(book.getAuthor()));
     }
 
     /**
@@ -129,7 +144,15 @@ public class BookStore {
      * @return 정렬된 도서 목록
      */
     public List<Book> getBooksOrderedByRating(boolean ascending) {
-        return null;
+        Comparator<Book> comparator = Comparator.comparing(Book::getRating);
+
+        if (!ascending) {
+            comparator = comparator.reversed();
+        }
+
+        return books.stream()
+                .sorted(comparator)
+                .toList();
     }
 
     /**
@@ -139,7 +162,9 @@ public class BookStore {
      * @return Optional<Book> 객체
      */
     public Optional<Book> findBookByTitle(String title) {
-        return null;
+        return books.stream()
+                .filter(book -> title.equals(book.getTitle()))
+                .findFirst();
     }
 
 
