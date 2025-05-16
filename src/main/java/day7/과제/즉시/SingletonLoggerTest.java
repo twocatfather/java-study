@@ -1,5 +1,7 @@
 package day7.과제.즉시;
 
+import day7.과제.basecode.LogLevel;
+
 public class SingletonLoggerTest {
     public static void main(String[] args) {
         // 첫 번째 로거 인스턴스 가져오기
